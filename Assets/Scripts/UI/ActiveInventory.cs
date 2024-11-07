@@ -48,6 +48,8 @@ public class ActiveInventory : Singleton<ActiveInventory>
 
     void ChangeActiveWeapon()
     {
+        if(ActiveWeapon.Instance == null) { return; }
+
         if (ActiveWeapon.Instance.CurrentActiveWeapon != null)
         {
             Destroy(ActiveWeapon.Instance.CurrentActiveWeapon.gameObject); // Xoa vu khi cu
@@ -55,7 +57,17 @@ public class ActiveInventory : Singleton<ActiveInventory>
 
         Transform childTransform = transform.GetChild(activeSlotIndexNum);
         InventorySlot inventorySlot = childTransform.GetComponentInChildren<InventorySlot>();
+
+        if(inventorySlot == null) { return;}
+
         WeaponInfo weaponInfo = inventorySlot.GetWeaponInfo();
+
+        if( weaponInfo == null || weaponInfo.weaponPrefab == null)
+        {
+            ActiveWeapon.Instance.WeaponNull();
+            return;
+        }
+
         GameObject weaponToSpawn = weaponInfo.weaponPrefab;
 
         if (weaponToSpawn == null) 
@@ -65,10 +77,6 @@ public class ActiveInventory : Singleton<ActiveInventory>
         }
 
         GameObject newWeapon = Instantiate(weaponToSpawn, ActiveWeapon.Instance.transform); // Tao vu khi moi
-
-        //ActiveWeapon.Instance.transform.rotation = Quaternion.Euler(0, 0, 0);
-        //newWeapon.transform.parent = ActiveWeapon.Instance.transform; // Gan cha cho vu khi moi
-
         ActiveWeapon.Instance.NewWeapon(newWeapon.GetComponent<MonoBehaviour>()); // Cap nhat vu khi moi
     }
 }
